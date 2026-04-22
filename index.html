@@ -446,8 +446,8 @@
 
           </div>
 
-          <!-- <div class="col-lg-8">
-            <div data-aos="fade-up" data-aos-delay="200">
+          <div class="col-lg-8">
+            <div class="php-email-form" data-aos="fade-up" data-aos-delay="200">
               <div class="row gy-4">
 
                 <div class="col-md-6">
@@ -467,41 +467,14 @@
                 </div>
 
                 <div class="col-md-12 text-center">
-                  <div id="contact-error" style="display:none; color:red; margin-bottom:10px;"></div>
-                  <div id="contact-success" style="display:none; color:green; margin-bottom:10px;">Your message has been sent. Thank you!</div>
-                  <button type="button" class="btn-get-started" onclick="submitContactForm()">Send Message</button>
+                  <div id="contact-error" class="error-message"></div>
+                  <div id="contact-success" class="sent-message">Your message has been sent. Thank you!</div>
+                  <button type="submit" id="contact-submit" onclick="submitContactForm()">Send Message</button>
                 </div>
 
               </div>
             </div>
-
-            <script>
-              function submitContactForm() {
-                var name = document.getElementById('contact-name').value.trim();
-                var email = document.getElementById('contact-email').value.trim();
-                var subject = document.getElementById('contact-subject').value.trim();
-                var message = document.getElementById('contact-message').value.trim();
-                var errorEl = document.getElementById('contact-error');
-                var successEl = document.getElementById('contact-success');
-
-                if (!name || !email || !subject || !message) {
-                  errorEl.textContent = 'Please fill in all fields.';
-                  errorEl.style.display = 'block';
-                  successEl.style.display = 'none';
-                  return;
-                }
-
-                var mailtoLink = 'mailto:INFO@reclad.in'
-                  + '?subject=' + encodeURIComponent(subject)
-                  + '&body=' + encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\n\n' + message);
-
-                window.location.href = mailtoLink;
-
-                errorEl.style.display = 'none';
-                successEl.style.display = 'block';
-              }
-            </script>
-          </div> -->
+          </div>
 
         </div>
 
@@ -577,6 +550,55 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    emailjs.init('vrC0v5P8gfKWcuS-v');
+
+    function submitContactForm() {
+      var name = document.getElementById('contact-name').value.trim();
+      var email = document.getElementById('contact-email').value.trim();
+      var subject = document.getElementById('contact-subject').value.trim();
+      var message = document.getElementById('contact-message').value.trim();
+      var errorEl = document.getElementById('contact-error');
+      var successEl = document.getElementById('contact-success');
+      var btn = document.getElementById('contact-submit');
+
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      if (!name || !email || !subject || !message) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+
+      emailjs.send('service_3pki5j7', 'template_a3dmxvk', {
+        from_name: name,
+        from_email: email,
+        subject: subject,
+        message: message
+      }).then(function() {
+        successEl.style.display = 'block';
+        document.getElementById('contact-name').value = '';
+        document.getElementById('contact-email').value = '';
+        document.getElementById('contact-subject').value = '';
+        document.getElementById('contact-message').value = '';
+      }).catch(function(error) {
+        errorEl.textContent = 'Failed to send message. Please try again.';
+        errorEl.style.display = 'block';
+        console.error('EmailJS error:', error);
+      }).finally(function() {
+        btn.textContent = 'Send Message';
+        btn.disabled = false;
+      });
+
+    }
+  </script>
 
 </body>
 
